@@ -1,12 +1,12 @@
 # SeekShop
 
-This is a demo/portfolio project showcasing a simple Android application built with Kotlin, Jetpack Compose and Gradle. The application uses the Kroger API to fetch and display location data.
+This is a demo/portfolio project showcasing a simple Android application built with Kotlin, Jetpack Compose, and Gradle. The application uses the Kroger API to fetch and display location data.
 
 ## Getting Started
 
 To get this project up and running on your local machine, follow these steps:
 
-1. Clone the repository: `git clone git@github.com:b00se/ShopSeek.git`
+1. Clone the repository: `git clone git@github.com:b00se/SeekShop.git`
 2. Open the project in Android Studio Iguana | 2023.2.1 Patch 1 or any other IDE that supports Android development.
 
 ## Configuration
