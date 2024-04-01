@@ -1,8 +1,12 @@
 package com.example.seekshop.ui.location
 
+import android.Manifest
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,18 +34,48 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LocationActivity : ComponentActivity() {
+
+    private val locationViewModel: LocationViewModel by viewModels()
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                locationViewModel.fetchLatLong()
+            } else {
+               Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        lifecycleScope.launch {
+            locationViewModel.permissionRequestEvent.collect {event ->
+                when(event) {
+                    PermissionRequestEvent.Request -> {
+                        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                    else -> {
+                        //do nothing
+
+                    }
+                }
+            }
+        }
+
         setContent {
             LocationScreen()
         }
     }
 }
+
 
 @Composable
 fun LocationScreen(locationViewModel: LocationViewModel = viewModel()) {
@@ -115,7 +149,7 @@ fun LocationScreen(locationViewModel: LocationViewModel = viewModel()) {
                     Text("Submit")
                 }
                 Button(
-                    onClick = { locationViewModel.fetchLatLon() }
+                    onClick = { locationViewModel.requestLocationPermission() }
                 ) {
                     Text("Use My Location")
                 }

@@ -94,6 +94,7 @@ dependencies {
     implementation(libs.androidx.startup)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.play.services.location)
 
     // Hilt
     implementation(libs.hilt.android)

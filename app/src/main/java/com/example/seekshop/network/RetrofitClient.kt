@@ -63,11 +63,11 @@ class RetrofitClient @Inject constructor(){
     suspend fun fetchLocations(
         authToken: String,
         zipCode: String? = null,
-        latLon: String? = null,
+        latLong: String? = null,
     ): Result<LocationsResponse> {
         val service = instance.create(KrogerService::class.java)
 
-        if (zipCode == null && latLon == null) {
+        if (zipCode == null && latLong == null) {
             return Result.failure(RuntimeException("Either zipCode or latLon must be provided"))
         }
 
@@ -75,7 +75,7 @@ class RetrofitClient @Inject constructor(){
             val response = service.getLocations(
                 authHeader = "Bearer $authToken",
                 zipCode = zipCode,
-                latLong = latLon,
+                latLong = latLong,
             )
             response.body()?.let {
                 return Result.success(it)
