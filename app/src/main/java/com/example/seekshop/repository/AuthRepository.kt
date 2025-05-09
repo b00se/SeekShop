@@ -1,13 +1,14 @@
 package com.example.seekshop.repository
 
 import com.example.seekshop.network.api.RetrofitClient
+import com.example.seekshop.network.api.RetrofitClientContract
 import com.example.seekshop.network.mappers.toDomain
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
-    private val secureTokenStorage: SecureTokenStorage,
-    private val authServe: RetrofitClient
+    private val secureTokenStorage: ISecureTokenStorage,
+    private val authServe: RetrofitClientContract
 ) {
 
     suspend fun getAuthToken(): String {

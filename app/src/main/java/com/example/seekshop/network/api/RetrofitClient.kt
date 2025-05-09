@@ -15,42 +15,19 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Inject
 
-class RetrofitClient @Inject constructor(){
-    private val contentType = "application/json".toMediaType()
+class RetrofitClient @Inject constructor(
+    private val krogerService: KrogerService
+) : RetrofitClientContract {
 
-    private val json = Json {
-        ignoreUnknownKeys = true
-    }
-
-
-    private val instance: Retrofit by lazy {
-        val logger = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-
-        val client = OkHttpClient.Builder()
-            .addInterceptor(logger)
-            .build()
-
-        Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(client)
-            .addConverterFactory(
-                json.asConverterFactory(contentType)
-            )
-            .build()
-    }
-
-    suspend fun fetchAuthToken(): Result<AuthTokenResponseDTO> {
+    override suspend fun fetchAuthToken(): Result<AuthTokenResponseDTO> {
         val clientId = BuildConfig.KROGER_CLIENT_ID
         val clientSecret = BuildConfig.KROGER_CLIENT_SECRET
         val credentials = "$clientId:$clientSecret"
         val authHeader = "Basic ${encodeToString(credentials.toByteArray(), Base64.NO_WRAP)}"
 
-        val service = instance.create(KrogerService::class.java)
 
         try {
-            val response = service.getAuthToken(authHeader)
+            val response = krogerService.getAuthToken(authHeader)
             response.body()?.let {
                 return Result.success(it)
             } ?: run {
@@ -61,19 +38,18 @@ class RetrofitClient @Inject constructor(){
         }
     }
 
-    suspend fun fetchLocations(
+    override suspend fun fetchLocations(
         authToken: String,
-        zipCode: String? = null,
-        latLong: String? = null,
+        zipCode: String?,
+        latLong: String?,
     ): Result<LocationsResponseDTO> {
-        val service = instance.create(KrogerService::class.java)
 
         if (zipCode == null && latLong == null) {
             return Result.failure(RuntimeException("Either zipCode or latLon must be provided"))
         }
 
         try {
-            val response = service.getLocations(
+            val response = krogerService.getLocations(
                 authHeader = "Bearer $authToken",
                 zipCode = zipCode,
                 latLong = latLong,
@@ -88,15 +64,14 @@ class RetrofitClient @Inject constructor(){
         }
     }
 
-    suspend fun fetchProduct(
+    override suspend fun fetchProduct(
         authToken : String,
         locationId : String,
         term : String,
     ) : Result<ProductResponseDTO> {
-        val service = instance.create(KrogerService::class.java)
 
         try {
-            val response = service.getProduct(
+            val response = krogerService.getProduct(
                 authHeader = "Bearer $authToken",
                 locationId = locationId,
                 term = term

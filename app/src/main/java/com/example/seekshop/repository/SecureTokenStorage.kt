@@ -13,30 +13,30 @@ import javax.inject.Singleton
 @Singleton
 class SecureTokenStorage @Inject constructor(
     private val dataStore: DataStore<Preferences>
-) {
+) : ISecureTokenStorage {
 
     private val TOKEN_KEY = stringPreferencesKey("token")
     private val TOKEN_EXPIRATION_KEY = longPreferencesKey("token_expiration")
 
-    suspend fun saveToken(token: String) {
+    override suspend fun saveToken(token: String) {
         dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = token
         }
     }
 
-    suspend fun saveTokenWithExpiration(token: String, expiration: Long) {
+    override suspend fun saveTokenWithExpiration(token: String, expiration: Long) {
         dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = token
             preferences[TOKEN_EXPIRATION_KEY] = expiration
         }
     }
 
-    val tokenFlow: Flow<String?> = dataStore.data
+    override val tokenFlow: Flow<String?> = dataStore.data
         .map { preferences ->
             preferences[TOKEN_KEY]
         }
 
-    val tokenExpirationFlow: Flow<Long?> = dataStore.data
+    override val tokenExpirationFlow: Flow<Long?> = dataStore.data
         .map { preferences ->
             preferences[TOKEN_EXPIRATION_KEY]
         }

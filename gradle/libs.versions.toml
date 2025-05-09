@@ -33,6 +33,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 # Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltAndroid" }
+hilt-android-testing = {group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hiltAndroid"}
 javapoet = { group = "com.squareup", name = "javapoet", version = "1.13.0" }
 
 # Kotlinx Serialization
