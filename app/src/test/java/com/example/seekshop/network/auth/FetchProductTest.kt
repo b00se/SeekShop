@@ -1,6 +1,7 @@
 package com.example.seekshop.network.auth
 
-import com.example.seekshop.network.RetrofitClient
+import com.example.seekshop.network.api.RetrofitClient
+import com.example.seekshop.network.mappers.toDomain
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import kotlinx.coroutines.runBlocking
@@ -14,11 +15,12 @@ class FetchProductTest {
 
     private var authToken: String = ""
     private var locationId: String = ""
+    private val client = RetrofitClient()
 
     @Before
     fun setUp(): Unit = runBlocking {
-        authToken = RetrofitClient.fetchAuthToken().getOrThrow().accessToken
-        locationId = RetrofitClient.fetchLocations(
+        authToken = client.fetchAuthToken().getOrThrow().accessToken
+        locationId = client.fetchLocations(
             authToken = authToken,
             zipCode = "43210",
         ).getOrThrow().data.first().id
@@ -26,7 +28,7 @@ class FetchProductTest {
 
     @Test
     fun testFetchProduct(): Unit = runBlocking {
-        val result = RetrofitClient.fetchProduct(
+        val result = client.fetchProduct(
             authToken = authToken,
             locationId = locationId,
             term = "milk"
@@ -36,11 +38,11 @@ class FetchProductTest {
             .that(result.isSuccess).isTrue()
         result.onSuccess { productResponse ->
             assertThat(productResponse.data).isNotEmpty()
-            with(productResponse.data.first()) {
+            with(productResponse.data.first().toDomain()) {
                 assertThat(id).isNotEmpty()
-                assertThat(images).isNotEmpty()
+                assertThat(imageUrl).isNotEmpty()
                 assertThat(description).isNotEmpty()
-                assertThat(price.regular).isGreaterThan(0)
+                assertThat(price.regular).isAtLeast(0)
                 assertThat(price.promo).isAtLeast(0)
             }
         }

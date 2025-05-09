@@ -1,6 +1,6 @@
 package com.example.seekshop.network.auth
 
-import com.example.seekshop.network.RetrofitClient
+import com.example.seekshop.network.api.RetrofitClient
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -12,15 +12,16 @@ import org.robolectric.RobolectricTestRunner
 class FetchLocationsTest {
 
     private var authToken: String = ""
+    private val client = RetrofitClient()
 
     @Before
     fun setUp(): Unit = runBlocking {
-        authToken = RetrofitClient.fetchAuthToken().getOrThrow().accessToken
+        authToken = client.fetchAuthToken().getOrThrow().accessToken
     }
 
     @Test
     fun testFetchLocations(): Unit = runBlocking {
-        val result = RetrofitClient.fetchLocations(
+        val result = client.fetchLocations(
             authToken = authToken,
             zipCode = "43210",
             )

@@ -1,11 +1,12 @@
-package com.example.seekshop.network
+package com.example.seekshop.network.api
 
 import android.util.Base64
 import android.util.Base64.encodeToString
 import com.example.seekshop.BuildConfig
-import com.example.seekshop.network.model.AuthTokenResponse
-import com.example.seekshop.network.model.LocationsResponse
-import com.example.seekshop.network.model.ProductResponse
+import com.example.seekshop.network.dto.ProductResponseDTO
+import com.example.seekshop.network.dto.AuthTokenResponseDTO
+import com.example.seekshop.network.dto.LocationsResponseDTO
+import com.example.seekshop.network.mappers.toDomain
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -40,7 +41,7 @@ class RetrofitClient @Inject constructor(){
             .build()
     }
 
-    suspend fun fetchAuthToken(): Result<AuthTokenResponse> {
+    suspend fun fetchAuthToken(): Result<AuthTokenResponseDTO> {
         val clientId = BuildConfig.KROGER_CLIENT_ID
         val clientSecret = BuildConfig.KROGER_CLIENT_SECRET
         val credentials = "$clientId:$clientSecret"
@@ -64,7 +65,7 @@ class RetrofitClient @Inject constructor(){
         authToken: String,
         zipCode: String? = null,
         latLong: String? = null,
-    ): Result<LocationsResponse> {
+    ): Result<LocationsResponseDTO> {
         val service = instance.create(KrogerService::class.java)
 
         if (zipCode == null && latLong == null) {
@@ -91,7 +92,7 @@ class RetrofitClient @Inject constructor(){
         authToken : String,
         locationId : String,
         term : String,
-    ) : Result<ProductResponse> {
+    ) : Result<ProductResponseDTO> {
         val service = instance.create(KrogerService::class.java)
 
         try {

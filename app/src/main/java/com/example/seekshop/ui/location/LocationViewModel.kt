@@ -4,8 +4,9 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.seekshop.network.RetrofitClient
-import com.example.seekshop.network.model.Location
+import com.example.seekshop.network.api.RetrofitClient
+import com.example.seekshop.network.mappers.toDomain
+import com.example.seekshop.domain.model.Location
 import com.example.seekshop.repository.AuthRepository
 import com.example.seekshop.ui.AppPermissionChecker
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -30,12 +31,12 @@ class LocationViewModel @Inject constructor(
     private val _locationState = MutableStateFlow<LocationState>(LocationState.Empty)
     val locationState: StateFlow<LocationState> = _locationState.asStateFlow()
 
-    private val _permissionRequestEvnet = MutableStateFlow<PermissionRequestEvent>(PermissionRequestEvent.Empty)
-    val permissionRequestEvent : StateFlow<PermissionRequestEvent> = _permissionRequestEvnet.asStateFlow()
+    private val _permissionRequestEvent = MutableStateFlow<PermissionRequestEvent>(PermissionRequestEvent.Empty)
+    val permissionRequestEvent : StateFlow<PermissionRequestEvent> = _permissionRequestEvent.asStateFlow()
 
     fun requestLocationPermission() {
         if (!permissionChecker.checkLocationPermission()) {
-            _permissionRequestEvnet.value = PermissionRequestEvent.Request
+            _permissionRequestEvent.value = PermissionRequestEvent.Request
         } else {
             fetchLatLong()
         }
@@ -49,9 +50,10 @@ class LocationViewModel @Inject constructor(
                     authToken = authRepository.getAuthToken(),
                     zipCode = zipCode
                 )
-                _locationState.value = LocationState.Success(locations.getOrThrow().data)
+                val domainLocations = locations.getOrThrow().data.map { it.toDomain() }
+                _locationState.value = LocationState.Success(domainLocations)
             } catch (e: Exception) {
-                _locationState.value = LocationState.Error(e.message ?: "Unknown error")
+                handleError(e)
             }
         }
     }
@@ -72,10 +74,14 @@ class LocationViewModel @Inject constructor(
 
             val locationCallback = object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
-                    for (location in locationResult.locations) {
+                    val location = locationResult.locations.firstOrNull()
+                    if (location != null) {
                         val lat = location.latitude
                         val long = location.longitude
                         Log.d("Location", "Lat: $lat, Long: $long")
+
+                        // Stop requesting location updates immediately after one good fix
+                        fusedLocationProviderClient.removeLocationUpdates(this)
 
                         viewModelScope.launch {
                             try {
@@ -83,37 +89,39 @@ class LocationViewModel @Inject constructor(
                                     authToken = authRepository.getAuthToken(),
                                     latLong = "$lat,$long"
                                 )
+                                val domainLocations = locations.getOrThrow().data.map { it.toDomain() }
                                 _locationState.value =
-                                    LocationState.Success(locations.getOrThrow().data)
+                                    LocationState.Success(domainLocations)
                             } catch (e: Exception) {
-                                _locationState.value =
-                                    LocationState.Error(e.message ?: "Unknown error")
+                                handleError(e)
                             }
                         }
-
-                        // Stop location updates as soon as we get the first location
-                        fusedLocationProviderClient.removeLocationUpdates(this)
-                        break
+                    } else {
+                        _locationState.value = LocationState.Error("Unable to determine location")
                     }
                 }
             }
             try {
                 fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
             } catch (e: Exception) {
-                _locationState.value = LocationState.Error(e.message ?: "Unknown error")
+                handleError(e)
             }
         }
+    }
+
+    private fun handleError(e: Exception) {
+        _locationState.value = LocationState.Error(e.message ?: "Unknown error")
     }
 }
 
 sealed class LocationState {
-    object Empty : LocationState()
-    object Loading : LocationState()
+    data object Empty : LocationState()
+    data object Loading : LocationState()
     data class Success(val locations: List<Location>) : LocationState()
     data class Error(val message: String) : LocationState()
 }
 
 sealed class PermissionRequestEvent {
-    object Request : PermissionRequestEvent()
-    object Empty : PermissionRequestEvent()
+    data object Request : PermissionRequestEvent()
+    data object Empty : PermissionRequestEvent()
 }

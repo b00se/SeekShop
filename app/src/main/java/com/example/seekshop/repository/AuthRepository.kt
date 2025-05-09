@@ -1,6 +1,7 @@
 package com.example.seekshop.repository
 
-import com.example.seekshop.network.RetrofitClient
+import com.example.seekshop.network.api.RetrofitClient
+import com.example.seekshop.network.mappers.toDomain
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
@@ -15,7 +16,7 @@ class AuthRepository @Inject constructor(
     }
 
     private suspend fun fetchAndStoreNewToken(): String {
-        val newToken = authServe.fetchAuthToken().getOrThrow()
+        val newToken = authServe.fetchAuthToken().getOrThrow().toDomain()
         val expirationTime = System.currentTimeMillis() + (newToken.expiresIn.toLong() * 1000L)
         secureTokenStorage.saveTokenWithExpiration(newToken.accessToken, expirationTime)
         return newToken.accessToken

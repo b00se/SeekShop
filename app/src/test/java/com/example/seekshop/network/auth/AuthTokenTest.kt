@@ -1,6 +1,6 @@
 package com.example.seekshop.network.auth
 
-import com.example.seekshop.network.RetrofitClient
+import com.example.seekshop.network.api.RetrofitClient
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -10,9 +10,11 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class AuthTokenTest {
 
+    private val client = RetrofitClient()
+
     @Test
     fun testFetchAuthToken(): Unit = runBlocking {
-        val result = RetrofitClient.fetchAuthToken()
+        val result = client.fetchAuthToken()
 
         assertThat(result.isSuccess).isTrue()
         result.onSuccess { authTokenResponse ->

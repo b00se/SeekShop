@@ -1,7 +1,7 @@
 package com.example.seekshop.di
 
 import android.content.Context
-import com.example.seekshop.network.RetrofitClient
+import com.example.seekshop.network.api.RetrofitClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module
