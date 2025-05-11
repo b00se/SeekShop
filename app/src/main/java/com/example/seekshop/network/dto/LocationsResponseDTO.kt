@@ -1,21 +1,21 @@
-package com.example.seekshop.network.model
+package com.example.seekshop.network.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LocationsResponse(val data: List<Location>)
+data class LocationsResponseDTO(val data: List<LocationDTO>)
 
 @Serializable
-data class Location(
+data class LocationDTO(
     @SerialName("locationId")  val id: String,
     val name: String,
-    val address: Address,
-    val geolocation: Geolocation,
+    val address: AddressDTO,
+    val geolocation: GeolocationDTO,
 )
 
 @Serializable
-data class Address(
+data class AddressDTO(
     val addressLine1: String,
     val city: String,
     val state: String,
@@ -23,7 +23,7 @@ data class Address(
 )
 
 @Serializable
-data class Geolocation(
+data class GeolocationDTO(
     val latitude: Double,
     val longitude: Double,
 )

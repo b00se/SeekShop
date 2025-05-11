@@ -7,6 +7,9 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
+import com.example.seekshop.repository.ISecureTokenStorage
+import com.example.seekshop.repository.SecureTokenStorage
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,4 +34,15 @@ object DataStoreModule {
             ).build()
         }
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class StorageBindingModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindSecureTokenStorage(
+        impl: SecureTokenStorage
+    ): ISecureTokenStorage
 }

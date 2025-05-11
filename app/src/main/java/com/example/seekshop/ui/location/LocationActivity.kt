@@ -112,7 +112,7 @@ fun LocationScreen(locationViewModel: LocationViewModel = viewModel()) {
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                        text = location.address.addressLine1,
+                                        text = location.address.street,
                                         style = MaterialTheme.typography.bodyLarge
                                 )
                                 Row {

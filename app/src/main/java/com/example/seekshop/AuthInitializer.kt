@@ -2,7 +2,7 @@ package com.example.seekshop
 
 import android.content.Context
 import androidx.startup.Initializer
-import com.example.seekshop.network.RetrofitClient
+import com.example.seekshop.network.api.RetrofitClient
 import com.example.seekshop.repository.AuthRepository
 import com.example.seekshop.repository.SecureTokenStorage
 import dagger.hilt.EntryPoint
