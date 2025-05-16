@@ -2,6 +2,7 @@ package com.example.seekshop.network.api
 
 import android.util.Base64
 import android.util.Base64.encodeToString
+import android.util.Log
 import com.example.seekshop.BuildConfig
 import com.example.seekshop.network.dto.ProductResponseDTO
 import com.example.seekshop.network.dto.AuthTokenResponseDTO

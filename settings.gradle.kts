@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        mavenCentral()
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -7,13 +8,12 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
-        mavenCentral()
         gradlePluginPortal()
     }
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id.startsWith("dagger.hilt.android")) {
-                useModule("com.google.dagger:hilt-android-gradle-plugin:2.51")
+                useModule("com.google.dagger:hilt-android-gradle-plugin:2.56.2")
             }
         }
     }

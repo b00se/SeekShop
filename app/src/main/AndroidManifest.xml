@@ -17,7 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SeekShop"
-        tools:targetApi="31">
+        tools:targetApi="35">
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
@@ -28,7 +28,7 @@
                 android:value="androidx.startup" />
         </provider>
         <activity
-            android:name=".ui.location.LocationActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SeekShop">
             <intent-filter>

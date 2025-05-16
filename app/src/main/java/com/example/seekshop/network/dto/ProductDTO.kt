@@ -5,10 +5,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProductDTO(
     val productId: String,
-    val brand: String,
+    val brand: String? = null,
     val description: String,
     val items: List<ItemDTO>,
-    val images: List<ImageDTO>,
+    val images: List<ImageDTO>? = null,
 )
 
 @Serializable

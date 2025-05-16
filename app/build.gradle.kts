@@ -1,17 +1,24 @@
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlinSerialization)
-    kotlin("kapt")
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 
-    id("dagger.hilt.android.plugin")
+    alias(libs.plugins.hilt)
+}
+
+kotlin {
+    sourceSets.all {
+        kotlin.srcDir("build/generated/ksp/${name}/kotlin")
+    }
 }
 
 android {
     namespace = "com.example.seekshop"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.seekshop"
@@ -62,6 +69,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -71,16 +79,19 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
+        kotlinCompilerExtensionVersion = "2.1.20"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/gradle/incremental.annotation.processors"
         }
     }
 }
 
 dependencies {
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -92,14 +103,23 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.startup)
+    implementation(libs.androidx.navigation)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
+//    implementation(libs.kotlinx.metadata.jvm)
+
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
 
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.javapoet)
-    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
 
     // Security
     implementation(libs.androidx.datastore.preferences)
@@ -124,7 +144,8 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.android.compiler)
+    androidTestImplementation(libs.hilt.android.compiler)
+    kspAndroidTest(libs.hilt.android.compiler)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

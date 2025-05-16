@@ -7,14 +7,14 @@ import com.example.seekshop.domain.model.Product
 
 fun ProductDTO.toDomain(): Product {
     val imageUrl = images
-        .flatMap { it.sizes.orEmpty() }
-        .firstOrNull()?.url
+        ?.flatMap { it.sizes.orEmpty() }
+        ?.firstOrNull()?.url.orEmpty()
 
     val price = items.firstOrNull()?.price ?: PriceDTO(0.0, 0.0)
 
     return Product(
         id = productId,
-        brand = brand,
+        brand = brand.orEmpty(),
         description = description,
         imageUrl = imageUrl,
         price = Price(price.regular, price.promo)
