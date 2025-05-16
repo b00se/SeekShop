@@ -69,13 +69,17 @@ class RetrofitClient @Inject constructor(
         authToken : String,
         locationId : String,
         term : String,
+        limit : Int,
+        start : Int,
     ) : Result<ProductResponseDTO> {
 
         try {
             val response = krogerService.getProduct(
                 authHeader = "Bearer $authToken",
                 locationId = locationId,
-                term = term
+                term = term,
+                limit = limit,
+                start = start
             )
             response.body()?.let {
                 return Result.success(it)

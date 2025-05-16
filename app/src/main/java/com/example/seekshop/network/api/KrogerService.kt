@@ -33,6 +33,7 @@ interface KrogerService {
         @Header("Authorization") authHeader: String,
         @Query("filter.locationId") locationId: String,
         @Query("filter.term") term: String,
-        @Query("filter.limit") limit: Int = 50,
+        @Query("filter.limit") limit: Int,
+        @Query("filter.start") start: Int,
     ): Response<ProductResponseDTO>
 }
